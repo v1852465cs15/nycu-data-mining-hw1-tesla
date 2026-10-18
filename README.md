@@ -2,6 +2,14 @@
 
 This integrated report has exactly six pages TOTAL, including references, using the official ACL style with unchanged margins and body font size. Member contributions follow the user's confirmed A/B/C assignments. The GitHub repository is public and can be viewed without signing in.
 
+## Final PDF and original Part B code — 2026-10-19
+
+`HW1_G01_report.pdf` is the current six-page submission candidate, edited directly from the team's supplied `HW1_G01_report_revised.pdf`. It preserves that PDF's Part C tables and adds a Related Work comparison table, explicit A/B/C member contributions, and an honest explanation that EUR 3,000 is an assumed tolerance without stakeholder cost evidence. No existing power plot was supplied, so none was invented. A duplicated page-3 text layer and the incorrect claim that EUR 3,004 meets a EUR 3,000 threshold were corrected. The Group B baseline paragraph is preserved; Part C's car-level bootstrap is distinguished from the dealer-cluster procedure.
+
+**Original Group B implementation:** see [`partB/`](partB/). Its Python files, README, settings, fonts and workbook are copied byte-for-byte from the supplied `partB (1).zip`, preserving filenames, indentation and line breaks. Follow [`partB/README.md`](partB/README.md) from inside that directory. Run `models.py` before analysis to generate model outputs. Source modules are separate: `data.py`, `models.py`, `analyze.py`, `significance.py`, `utils.py`, `dashboard.py`, and `clear.py`. Do not run `clear.py` unless you intend to delete local Trackio projects.
+
+**Source/version boundary:** `src/`, `analysis/`, `latex/` and the two ZIPs are the earlier integrated implementation and remain available as historical reproducibility material. They do not reproduce every later Part C HC1/paired-bootstrap revision or this directly edited PDF layout. In particular, the table/figure reproduction map below describes that earlier integration, not the final PDF's updated Part C inference. The team's matching revised LaTeX and Part C code have not been supplied; do not treat the older source archive as the final PDF source. Original Group B code remains independent of these integration scripts.
+
 ## Quick start and repository layout
 
 Source: AutoScout24 European Tesla advertisements collected **2026-10-05**. The target is advertised asking price in EUR, not a completed sale price. The supplied workbook has **3,754 records: 3,002 training and 752 test**; the existing split is retained.
