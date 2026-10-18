@@ -1,0 +1,47 @@
+input:
+  file: "Tesla.xlsx"
+  train-sheet: "訓練集(3002筆)"
+  test-sheet: "測試集(752筆)"
+  features:
+    numerical:
+      - "年份（首次登記）"
+      - "里程（km）"
+      - "功率（kW）"
+      - "配備數量"
+    categorical:
+      - "車型"
+      - "國家"
+      - "自動駕駛"
+  target: "售價"
+
+output:
+  dir: "output"
+  train-x: "trainX"
+  train-y: "trainY"
+  test-x: "testX"
+  test-y: "testY"
+
+models:
+  ols:
+    drop: []
+  ols-no-equipment-autopilot:
+    drop:
+      - "配備數量"
+      - "自動駕駛"
+
+baseline:
+  simple-features:
+    - "里程（km）"
+
+validation:
+  group-column: "車商"
+
+overwrite:
+  data: true
+  model: false     # OLS weights (<name>.joblib)
+  baseline: false  # baseline weights (<name>.joblib)
+  analysis: false  # CV / GroupKFold / learning-curve report (<name>.json), all models
+
+trackio:
+  project: "tesla-ols"
+  clear-on-analyze: true
