@@ -1,0 +1,16 @@
+\begin{table}[h!]
+\centering\small\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrr}
+\toprule
+Method & Group MAE & Test MAE & RMSE & $R^2$\\
+\midrule
+Mean & 8,552 $\pm$ 1,354 & 8,906 & 14,040 & -0.004\\
+Mileage & 7,806 $\pm$ 1,171 & 8,116 & 12,909 & 0.152\\
+RF (raw) & \textbf{2,660} $\pm$ \textbf{236} & \textbf{3,227} & \textbf{5,103} & \textbf{0.867}\\
+OLS A & 3,991 $\pm$ 429 & 4,290 & 5,971 & 0.818\\
+OLS C (ours) & 3,324 $\pm$ 267 & 3,711 & 5,399 & 0.852\\
+\bottomrule
+\end{tabular}
+\caption{Main results: errors in EUR; Group MAE is five-fold mean $\pm$ sample SD. RMSE and $R^2$ use all 752 test rows. Bold marks the best values.}
+\label{tab:results}
+\end{table}

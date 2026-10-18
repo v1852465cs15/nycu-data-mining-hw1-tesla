@@ -2,10 +2,52 @@
 
 This integrated report has exactly six pages TOTAL, including references, using the official ACL style with unchanged margins and body font size. Member contributions follow the user's confirmed A/B/C assignments. The GitHub repository is private. Arrange instructor access before submitting the repository URL.
 
+## Quick start and repository layout
+
+Source: AutoScout24 European Tesla advertisements collected **2026-10-05**. The target is advertised asking price in EUR, not a completed sale price. The supplied workbook has **3,754 records: 3,002 training and 752 test**; the existing split is retained.
+
+- `data/Tesla.xlsx`: shared dataset, unchanged; `data/settings.yml`: worksheet and feature settings.
+- `src/recompute.py`: preprocessing, feature construction, training, validation, evaluation and figures.
+- `src/make_tables.py`: converts saved analysis results into LaTeX tables.
+- `analysis/`: saved numerical outputs used by the report.
+- `latex/`: editable ACL source and figures; compile `report.tex`.
+- `HW1_G01_report.pdf`: current six-page formal report. ZIPs are retained for download.
+
+Python 3.12 installation and execution, from the repository root:
+
+```sh
+python -m venv .venv
+# Windows PowerShell:
+.venv/Scripts/Activate.ps1
+# macOS/Linux: source .venv/bin/activate
+python -m pip install -r requirements.txt
+python src/recompute.py
+python src/make_tables.py
+cd latex
+xelatex report.tex
+bibtex report
+xelatex report.tex
+xelatex report.tex
+```
+
+The last four commands require XeLaTeX/BibTeX (MiKTeX or TeX Live). Alternatively upload `latex/` to Overleaf and select XeLaTeX.
+
+### Reproducing report tables and figures
+
+| Report item | Saved result / source | Reproduction |
+|---|---|---|
+| Table 2, main comparison | `analysis/results.csv`, `latex/results_table.tex` | Both Python commands above |
+| Table 3, ablation | `analysis/results.csv`, `latex/ablation_table.tex` | Both Python commands above |
+| Table 4, paired gaps | `analysis/comparisons.csv`, `latex/comparisons_table.tex` | Both Python commands above |
+| Figure 1, EDA | `latex/figures/eda.pdf` | `python src/recompute.py` |
+| Figure 2, pipeline | Embedded diagram in `latex/paper.tex` | Compile `report.tex` |
+| Figure 3, residuals | `latex/figures/residuals.pdf` | `python src/recompute.py` |
+
+This repository reorganization changes paths only; no new experiments or numerical changes were made. The 2026-10-18 formal PDF contains only the requested baseline-label wording update. Part C's later revision list is not applied. The earlier anonymous report is removed from the current branch, but remains recoverable in Git history.
+
 ## Deliverables
 
 - `HW1_G01_report.pdf`: preprint format, names/student IDs, repository URL on page one.
-- `HW1_G01_judge.pdf`: review format, G01 only; no member names, student IDs or GitHub account in PDF text.
 - `Tesla_G01_ACL_Source.zip`: editable LaTeX project, including both main documents, official styles, bibliography, generated tables and figures.
 - `Tesla_G01_Reproducibility.zip`: calculation scripts, the unchanged shared workbook/settings, full results and LaTeX source.
 
@@ -26,7 +68,7 @@ Edit `team.tex` for team/repository information and `paper.tex` for any future c
 
 ## Reproduce
 
-Python 3.12 was used. Install `requirements.txt`, then run `python recompute.py` and `python make_tables.py` from the unpacked reproducibility folder. The optional local `deps` folder is not bundled; scripts otherwise use the installed Python environment. Model training reads `partB/Tesla.xlsx` and `partB/settings.yml` and writes only `analysis/` and generated tables/figures in `latex/`.
+Python 3.12 was used. Install `requirements.txt`, then run `python recompute.py` and `python make_tables.py` from the unpacked reproducibility folder (legacy ZIP layout); in this repository use the `src/` commands above. The optional local `deps` folder is not bundled; scripts otherwise use the installed Python environment. Model training reads `partB/Tesla.xlsx` and `partB/settings.yml` and writes only `analysis/` and generated tables/figures in `latex/`.
 
 Workbook SHA-256: `92d5319a1f8781e8fbe0ec5d94a67285dead9bdd51da68a0e775deff83b70d3c`.
 
@@ -48,4 +90,4 @@ ChatGPT/Codex assisted with inspecting team material, correcting analysis code, 
 
 ## 2026-10-18 text revision
 
-The formal report names and bolds Trivial Baseline, Simple Baseline and Strong Baseline as requested by Group B. Numerical results and analyses are unchanged. Float spacing was adjusted to retain six total pages. The Part C revision list has not been applied. The existing judge PDF remains the previous version. The source archives contain the revised shared paper text.
+The formal report names and bolds Trivial Baseline, Simple Baseline and Strong Baseline as requested by Group B. Numerical results and analyses are unchanged. Float spacing was adjusted to retain six total pages. The Part C revision list has not been applied. The earlier judge PDF is available only in Git history. The source archives contain the revised shared paper text.

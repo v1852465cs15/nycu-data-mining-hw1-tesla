@@ -1,0 +1,16 @@
+\begin{table}[h!]
+\centering\small\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrr}
+\toprule
+Set & KFold MAE & Group MAE & Test MAE\\
+\midrule
+A: raw & 3,939 $\pm$ 105 & 3,991 $\pm$ 429 & 4,290\\
+B: top-5 & 3,966 $\pm$ 118 & 4,022 $\pm$ 446 & 4,329\\
+\textbf{C: full} & 3,244 $\pm$ 92 & 3,324 $\pm$ 267 & 3,711\\
+C $-$ flags & 3,457 $\pm$ 95 & 3,522 $\pm$ 278 & 3,871\\
+C $-$ interactions & 3,705 $\pm$ 58 & 3,779 $\pm$ 414 & 4,081\\
+\bottomrule
+\end{tabular}
+\caption{Matched OLS ablations, EUR. All folds and preprocessing rules are shared. Lower is better; C is best in every column.}
+\label{tab:abl}
+\end{table}
