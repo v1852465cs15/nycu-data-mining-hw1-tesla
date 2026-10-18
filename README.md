@@ -9,7 +9,7 @@ This integrated report has exactly six pages TOTAL, including references, using 
 - `Tesla_G01_ACL_Source.zip`: editable LaTeX project, including both main documents, official styles, bibliography, generated tables and figures.
 - `Tesla_G01_Reproducibility.zip`: calculation scripts, the unchanged shared workbook/settings, full results and LaTeX source.
 
-No report has been submitted to E3 or the Judge. The required eight-minute presentation is a separate deliverable and is not included in this report package. The report is not a guarantee of any reviewer score.
+This update does not submit a report to E3 or the Judge. The required eight-minute presentation is a separate deliverable and is not included in this report package. The report is not a guarantee of any reviewer score.
 
 ## Compile
 
@@ -45,3 +45,7 @@ Test MAE: raw OLS 4,289.57 EUR; engineered OLS 3,711.48 EUR; random forest 3,227
 ## AI assistance
 
 ChatGPT/Codex assisted with inspecting team material, correcting analysis code, rerunning experiments, creating plots, checking references, writing and compilation. Member attribution was confirmed by the user. The team retains responsibility for verifying the integrated scientific results.
+
+## 2026-10-18 text revision
+
+The formal report names and bolds Trivial Baseline, Simple Baseline and Strong Baseline as requested by Group B. Numerical results and analyses are unchanged. Float spacing was adjusted to retain six total pages. The Part C revision list has not been applied. The existing judge PDF remains the previous version. The source archives contain the revised shared paper text.
