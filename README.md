@@ -1,6 +1,6 @@
 # G01 — Tesla asking-price regression (NYCU Data Mining HW1)
 
-This integrated report has exactly six pages TOTAL, including references, using the official ACL style with unchanged margins and body font size. Member contributions follow the user's confirmed A/B/C assignments. The GitHub repository is private. Arrange instructor access before submitting the repository URL.
+This integrated report has exactly six pages TOTAL, including references, using the official ACL style with unchanged margins and body font size. Member contributions follow the user's confirmed A/B/C assignments. The GitHub repository is public and can be viewed without signing in.
 
 ## Quick start and repository layout
 
@@ -81,7 +81,7 @@ Test MAE: raw OLS 4,289.57 EUR; engineered OLS 3,711.48 EUR; random forest 3,227
 ## Remaining team actions
 
 1. Review the integrated scientific claims before submission.
-2. Arrange instructor access to this private repository so the code and data can be reviewed.
+2. Confirm that the final report and repository agree before submission.
 3. Prepare the matching presentation and the required E3 ZIP using the assignment naming rules.
 
 ## AI assistance
