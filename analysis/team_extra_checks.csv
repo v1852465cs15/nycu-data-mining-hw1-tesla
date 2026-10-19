@@ -1,0 +1,5 @@
+id,check,delta,p
+E1,Add colour,32,0.32
+E2,Remove country,78,0.010
+E3,Remove model,2149,<.001
+E4,Add power squared,-107,<.001

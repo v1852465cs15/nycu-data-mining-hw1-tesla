@@ -1,0 +1,15 @@
+\begin{table}[h!]
+\centering\small\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llrr}
+\toprule
+ID & Additional check & $\Delta$ MAE & $p$\\
+\midrule
+E1 & Add colour & 32 & 0.320\\
+E2 & Remove country & 78 & 0.010\\
+E3 & Remove model & 2,149 & $<.001$\\
+E4 & Add power squared & -107 & $<.001$\\
+\bottomrule
+\end{tabular}
+\caption{Team-reported exploratory checks E1--E4: KFold MAE change from C (EUR 3,244), positive = worse; paired fold $t$-tests. E3 removes model and its year terms. These do not redefine H1--H3.}
+\label{tab:extra}
+\end{table}

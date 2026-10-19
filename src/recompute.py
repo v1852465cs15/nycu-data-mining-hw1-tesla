@@ -109,9 +109,9 @@ for col in CAT:
   if val==ref: continue
   name=EN[col]+': '+EN.get(val,val); z[name]=(vals==val).astype(float); cat_counts[name]=int((vals==val).sum())
 D=sm.add_constant(z).astype(float); ols=sm.OLS(y,D).fit()
-# A singleton category has unit leverage: HC3 inference is not identifiable for its coefficient.
+# HC1 matches the team's revised report; singleton uncertainty is not interpreted.
 single=[n for n,c in cat_counts.items() if c==1]; eligible=~(D[single].sum(axis=1)>0) if single else np.ones(len(D),bool)
-Dr=D.loc[eligible].drop(columns=single); robust=sm.OLS(y[eligible],Dr).fit(cov_type='HC3',use_t=True)
+robust=sm.OLS(y,D).fit(cov_type='HC1',use_t=True)
 ci=robust.conf_int(); coef=[]
 for i,name in enumerate(D.columns):
  if name=='const': continue
@@ -144,6 +144,7 @@ for a,c,label in zip(ax[:2],[MILE,YEAR],['Mileage (1,000 km)','Registration year
 mods=['Model 3','Model Y','Model S','Model X'];ax[2].boxplot([y[(tr[MODEL]==v).to_numpy()]/1000 for v in mods],tick_labels=['3','Y','S','X'],flierprops={'markersize':2});ax[2].set_xlabel('Tesla model');ax[2].set_ylabel('Asking price (1,000 EUR)')
 fig.savefig(FIG/'eda.pdf');plt.close(fig)
 fig,ax=plt.subplots(figsize=(3.3,1.75),layout='constrained');ax.scatter(p/1000,err/1000,s=7,alpha=.45,color='#176b87');ax.axhline(0,c='black',lw=.7);ax.set_xlabel('Predicted price (1,000 EUR)');ax.set_ylabel('Actual - predicted\n(1,000 EUR)');
-for i,j in enumerate(worst[:3]):ax.annotate(str(i+1),(p[j]/1000,err[j]/1000),fontsize=9,color='#b02d28')
+for bound in [-2*err.std(ddof=1),2*err.std(ddof=1)]: ax.axhline(bound/1000,c='gray',ls='--',lw=.7)
+for i,j in enumerate(worst):ax.annotate(str(i+1),(p[j]/1000,err[j]/1000),fontsize=9,color='#b02d28')
 fig.savefig(FIG/'residuals.pdf');plt.close(fig)
 print('DONE',flush=True)

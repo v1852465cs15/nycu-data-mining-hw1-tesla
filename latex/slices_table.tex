@@ -1,17 +1,17 @@
 \begin{table}[h!]
-\centering\small\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lrrrr}
+\centering\footnotesize\setlength{\tabcolsep}{2pt}
+\begin{tabular}{lrrrrrr}
 \toprule
-Model & $n$ & A & B & C\\
+Model & $n$ & A & B & C & Med.\% & $\leq$3k\%\\
 \midrule
-3 & 347 & 3,467 & 3,481 & 3,004\\
-S & 69 & 6,790 & 6,917 & 6,289\\
-Y & 271 & 3,723 & 3,770 & 3,161\\
-X & 59 & 7,816 & 7,876 & 6,423\\
-Roadster & 5 & 12,403 & 12,395 & 11,976\\
-Cybertruck & 1 & 22,051 & 21,858 & 19,203\\
+3 & 347 & 3,467 & 3,481 & 3,004 & 7.9 & 63\\
+S & 69 & 6,790 & 6,917 & 6,289 & 16.7 & 29\\
+Y & 271 & 3,723 & 3,770 & 3,161 & 6.7 & 58\\
+X & 59 & 7,816 & 7,876 & 6,423 & 9.5 & 42\\
+Roadster & 5 & 12,403 & 12,395 & 11,976 & 13.0 & 0\\
+Cybertruck & 1 & 22,051 & 21,858 & 19,203 & 12.0 & 0\\
 \bottomrule
 \end{tabular}
-\caption{Test MAE by model (EUR). All observed test slices are shown; small $n$ limits rare-model interpretation.}
+\caption{Test MAE by model (EUR). Last columns: C median absolute percentage error and share within EUR 3,000, as reported in the team revision. Rare classes are not interpreted.}
 \label{tab:slices}
 \end{table}

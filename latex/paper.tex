@@ -14,7 +14,7 @@
 \author{\teamid\\\members\\National Yang Ming Chiao Tung University\\\repoline}
 \fi
 \hypersetup{pdftitle={Interpretable Used-Tesla Asking Prices},pdfauthor={},pdfsubject={},pdfkeywords={}}
-\setlength{\textfloatsep}{12pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
 \setlength{\intextsep}{8pt plus 2pt minus 2pt}
 \begin{document}
 \maketitle
@@ -23,16 +23,21 @@ Buyers and small dealers need comparable asking-price estimates when screening u
 \end{abstract}
 
 \section{Introduction}
-A Tesla model name alone does not identify its trim, software entitlement, or condition. A buyer screening advertisements needs a comparable-price reference before paying for inspection; a small dealer needs an initial asking-price check. We estimate the \emph{advertised} price available in the observed market, not a sale price, future value, or certified fair value. An unusually large price gap should trigger inspection, not an automatic purchase decision.
+Buyers screening used EVs and small dealers setting asking prices need comparable-price references. A Tesla name alone does not identify trim, software or condition. We predict advertised EUR price, not sale price or certified fair value; large gaps should prompt inspection.
 
-Our question is whether inexpensive, listing-time trim indicators and model-specific registration-year slopes improve a transparent linear estimator beyond raw attributes and correlation ranking. We contribute (1) a fixed-split, train-only feature analysis (Sections 3--5), (2) matched linear ablations with dealer-grouped validation (Sections 6--7), and (3) final-model uncertainty and failure-case analysis (Section 8). The engineered model remains linear in its coefficients; we make no claim that it beats the nonlinear baseline.
+Our question is whether listing-time trim flags and model-specific year slopes improve transparent linear estimation beyond raw fields and correlation ranking. We contribute train-only feature analysis, matched ablations with dealer-grouped validation, and uncertainty/failure analysis. The engineered model is linear in its coefficients; we do not claim superiority over the nonlinear baseline.
 
 \section{Related Work}
-\citet{pudaruth2014} retained 97 Mauritian newspaper advertisements, using year and cylinder volume for numerical prediction; sparse mileage limited its use. Their 10-fold $k$NN MAE was 45,189 rupees for Toyota ($k=1$) and 25,741 for Nissan ($k=5$). We instead use Tesla listings across European seller countries, with explicit trim and usage features.
-
-\citet{bukvic2022} studied Croatian Nju\v{s}kalo advertisements, with manufacturer/model, production year and kilometres as candidate attributes. Their Table 3 reports linear-regression MAE 1,373.2 and RMSE 2,104.7 on the EUR price scale, versus random forest and SVM. We focus on one electric-vehicle brand and distinguish first registration from manufacture.
-
-\citet{madhusudhanan2024} use about two million B2C records and 65 attributes, including age, mileage and offer duration. Their attention-based ProbSAINT reports MAPE 5.6\% and 5.3\% on two temporal splits (Table 2). Our small snapshot lacks sales outcomes and duration; we use only listing-time fields. Different populations, currencies and targets make these errors context, not head-to-head benchmarks.
+The studies below provide context, not head-to-head benchmarks: populations, currencies, targets and evaluation protocols differ.
+\begin{center}\small\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\columnwidth}{@{}p{.30\columnwidth}X@{}}
+\toprule Study/data & Method and reported result\\\midrule
+\citet{pudaruth2014}: 97 Mauritian ads & 10-fold $k$NN; MAE 45,189 rupees (Toyota), 25,741 (Nissan). Year and cylinder volume.\\
+\citet{bukvic2022}: Croatian ads & Linear regression: MAE EUR 1,373.2, RMSE 2,104.7; compared with RF/SVM. Model, year and kilometres.\\
+\citet{madhusudhanan2024}: about 2M B2C records & ProbSAINT, 65 attributes; MAPE 5.6\%/5.3\% on temporal splits. Includes age, mileage, offer duration.\\
+This study: 3,754 European Tesla ads & OLS with title flags and model-year interactions; test MAE EUR 3,711 on 752 rows.\\\bottomrule
+\end{tabularx}\end{center}
+We use listing-time Tesla fields and first registration, rather than manufacture or offer duration. The comparison retains each study's original units.
 
 \section{Task Definition and Data}
 One row is an AutoScout24 advertisement. The continuous target is its asking price in EUR. The training range is \eur\PriceMin{}--\PriceMax{}; it defines observed coverage, not a clipping rule. Inputs are first-registration year, mileage (km), reported power (kW), equipment count, model, seller country, assistance label and selected title keywords. All are available when screening a listing with its price hidden. Seller identity, URL, collection order and target-bearing free text are not predictors.
@@ -41,7 +46,7 @@ The supplied workbook records collection on 5 October 2026 across 188 result pag
 
 \input{summary_table}
 
-All seven structured inputs are populated in the supplied workbook, so no additional imputation is fitted. Earlier filling and assistance annotations are inherited, not independently verified. Numeric fields are standardized using the current training fold; categories are one-hot encoded with unknown categories ignored at prediction. We preserve price extremes, because unusually expensive cars need not be erroneous. One training Model Y has year 2001: the main benchmark retains it to match the shared data, and Section 7 reports an exclusion sensitivity. Reported power and equipment counts are seller fields, not certified specifications; equipment lists can include headings. Appearance and range are excluded from the primary model to avoid adding uncertain measurements without demonstrated incremental value.
+All seven structured inputs are populated in the supplied workbook, so no additional imputation is fitted. Earlier filling and assistance annotations are inherited, not independently verified. Numeric fields are standardized using the current training fold; categories are one-hot encoded with unknown categories ignored at prediction. We preserve price extremes, because unusually expensive cars need not be erroneous. One training Model Y has year 2001: the main benchmark retains it to match the shared data, and Section 7 reports an exclusion sensitivity. Reported power and equipment counts are seller fields, not certified specifications; equipment lists can include headings. Exterior colour and range are excluded from the primary model; colour is used only in the additional check E1 (Section 8.1).
 
 \section{Exploratory Feature Analysis}
 Figure~\ref{fig:eda} uses training rows only. Price is associated with mileage, year and vehicle segment, but each marginal plot mixes trims and countries. Training Pearson correlations with price are \MileageR{} for mileage, \YearR{} for year and \PowerR{} for power. The year--mileage correlation is \YearMileageR{}; this motivates examining redundancy rather than interpreting either slope in isolation. We retain power as a predictive seller annotation, while acknowledging its uncertain measurement basis.
@@ -52,7 +57,7 @@ Figure~\ref{fig:eda} uses training rows only. Price is associated with mileage, 
 \label{fig:eda}
 \end{figure*}
 
-Univariate numeric $r^2$ and categorical correlation ratio $\eta^2$ place power, model, mileage, year and country above equipment and assistance. These common-scale scores use raw EUR price, not log-price. We test three explicit hypotheses: \textbf{H1}, trim indicators reduce error conditional on structured fields; \textbf{H2}, model-specific year interactions improve on a shared slope; \textbf{H3}, these two groups outperform raw correlation ranking. Their verdicts come from matched ablations in Section 7 and coefficient interpretation in Section 8, not from these plots alone.
+Univariate numeric $r^2$ and categorical correlation ratio $\eta^2$ place power, model, mileage, year and country above equipment and assistance. These common-scale scores use raw EUR price, not log-price. We test three explicit hypotheses: \textbf{H1}, trim indicators reduce error conditional on structured fields; \textbf{H2}, model-specific year interactions improve on a shared slope; \textbf{H3}, these two groups outperform raw correlation ranking. Their verdicts come from matched ablations in Section 7 and coefficient interpretation in Section 8, not from these plots alone. Additional checks E1--E4 examine exterior colour (an inherited categorical appearance field), country, model and a squared-power term; these are exploratory checks, not replacements for H1--H3.
 
 \section{Method}
 \subsection{Pipeline and feature groups}
@@ -79,7 +84,7 @@ u_m=\mathbf{1}(\mathrm{model}=m)(\mathrm{year}-\overline{\mathrm{year}}_{\mathrm
 They address H2. The fit-partition mean prevents validation-dependent centering. Model 3 shares the base slope with rare models; these latter classes cannot support reliable separate slopes. This is a registration-year association, not observed longitudinal depreciation.
 
 \subsection{Linear model and alternatives}
-OLS minimizes $\sum_i(y_i-b-\mathbf z_i^T\boldsymbol\beta)^2$. It offers direct EUR effects and a small fixed representation, while interactions allow non-additive raw-input behavior. It has no regularization parameter. No target logarithm, post-hoc clipping or higher-order polynomial search is used. Full one-hot fitting uses a least-squares solution; inference uses an equivalent full-rank reference coding. The retained representation has \NumParameters{} coefficients including the intercept.
+OLS minimizes $\sum_i(y_i-b-\mathbf z_i^T\boldsymbol\beta)^2$. It offers direct EUR effects and a small fixed representation, while interactions allow non-additive raw-input behavior. It has no regularization parameter. The frozen model uses no target logarithm or post-hoc clipping; the separate power-squared check does not change it. Full one-hot fitting uses a least-squares solution; inference uses an equivalent full-rank reference coding. The retained representation has \NumParameters{} coefficients including the intercept.
 
 Ridge is a plausible alternative for correlated features. A training-only dealer-grouped sensitivity searches $\alpha\in\{.01,.1,1,10,100,1000\}$ on the same Set C inputs; the lowest MAE is \eur\RidgeBest{} at $\alpha=\RidgeAlpha{}$, compared with OLS \eur\GroupC{}. We retain the already specified OLS benchmark and report this alternative without choosing a new model from test outcomes. Coefficient uncertainty is conditional on this representation.
 
@@ -90,7 +95,7 @@ We use identical five-fold shuffled KFold partitions (seed 42) across methods, p
 The supplied test set was already inspected in earlier team analyses. We freeze this integration's model definitions before recomputation and retain all 752 rows, but do not claim a new one-use blind holdout. Dealer grouping is not a vehicle-identity guarantee; overlap and sensitivity checks are reported separately. A newly collected locked test set remains necessary for confirmatory deployment claims.
 
 \subsection{Metrics and baselines}
-MAE measures typical absolute EUR error; RMSE penalizes large misses, and $R^2$ describes explained variation. We propose MAE $\leq$ \eur3,000 as a screening-use threshold, not a validated stakeholder tolerance or an individual guarantee. We also report the proportion of cars within \eur3,000.
+MAE measures typical absolute EUR error; RMSE penalizes large misses, and $R^2$ describes explained variation. We use MAE $\leq$ \eur3,000 as an assumed benchmark tolerance. No stakeholder cost data were collected: this is neither an inspection fee nor a validated buyer/dealer cost. Pass/fail and within-threshold shares are descriptive, not evidence of economic benefit or an individual guarantee.
 
 Baselines are the \textbf{Trivial Baseline (training mean)}, \textbf{Simple Baseline (mileage-only OLS)}, and \textbf{Strong Baseline (200-tree random forest on Set A, seed 42; no depth limit, default leaf size 1)}. The forest is an inherited fixed flexible comparator, not a tuned optimum. All methods use identical rows and metrics. Paired test-loss gaps use 10,000 dealer-cluster bootstrap resamples (seed 42), keeping both methods' predictions together. Grouped-fold paired $t$-tests have only five overlapping training fits, so their $p$-values are exploratory.
 
@@ -109,7 +114,7 @@ Only the feature representation changes in Table~\ref{tab:abl}; every row uses O
 The paired bootstrap intervals in Table~\ref{tab:gaps} preserve within-dealer dependence in test losses. They describe uncertainty for these fixed fitted models and observed sellers; they omit retraining, feature selection and market change. Reused test data and uncertain vehicle identity prevent treating these intervals as definitive prospective evidence.
 
 \input{slices_table}
-Table~\ref{tab:slices} shows how gains vary by model. Larger absolute errors for S/X can reflect heterogeneous trims and price scales, not simply worse percentage accuracy. Rare classes must not be interpreted from their tiny sample sizes. The same representation can improve common-model averages while remaining unreliable on individual outliers.
+C improves every common-model average (Table~\ref{tab:slices}), least for S. Relative to price, X (9.5\%) is close to 3/Y; S is weakest (16.7\%), with many old, cheap cars. Rare classes are not interpreted. No model meets the EUR 3,000 threshold; Model 3's EUR 3,004 exceeds it by EUR 4. Excluding six rare cars gives test MAE EUR 4,211 (A), 3,635 (C), and 3,090 (RF).
 
 \paragraph{Sensitivity to data quality.}
 A model/registration-month/mileage duplicate proxy flags \OverlapN{} test rows overlapping training. On the \NonoverlapN{} remaining rows, MAE is \eur\NonoverlapA{} (A), \eur\NonoverlapC{} (C), and \eur\NonoverlapRF{} (RF). Matching attributes do not prove identical vehicles; exclusion is a sensitivity analysis, not a replacement split. Removing the single Model Y/2001 training record and refitting C gives test MAE \eur\SuspectMAE{}. This post-hoc audit is not used to optimize the headline model.
@@ -117,52 +122,38 @@ A model/registration-month/mileage duplicate proxy flags \OverlapN{} test rows o
 \section{Analysis}
 \subsection{Coefficients and significance}
 \input{coefficients_table}
-Table~\ref{tab:coef} covers all non-intercept terms in the final Set C model, including rare categories. Numeric inputs, binary flags and interaction products are standardized before fitting; their effects are EUR per training SD. Category contrasts use Model 3, Netherlands and AP as references and remain 0/1. For a flag, divide its standardized coefficient by its SD to obtain a 0-to-1 premium. No coefficient is a percentage change, because the target is not logged.
-
-Intervals and two-sided $p$-values use HC3 heteroskedasticity-robust OLS $t$ inference. The single training Cybertruck has unit leverage: its own coefficient's interval is not identifiable. We report its fitted effect but mark interval and $p$ unavailable; other intervals come from the algebraically equivalent fit excluding that singleton row and dummy. This avoids presenting a numerical artifact as evidence. HC3 does not correct dealer dependence; inferential results are conditional, exploratory associations, with no multiple-testing correction. VIF uses the full-rank design including an intercept.
+Table~\ref{tab:coef} lists all 28 non-intercept terms. Continuous inputs and interaction products are standardized (EUR per training SD); flags are shown as 0-to-1 effects, and category contrasts use Model 3, Netherlands and AP. Training $R^2=0.850$. HC3 is undefined at the single leverage-1 Cybertruck, so the revised analysis uses HC1 robust $t$ inference and suppresses that singleton's uncertainty. HC1 ignores dealer dependence; no multiple-testing correction is applied. VIF uses the full-rank design with an intercept (maximum 5.9). Results are exploratory associations.
 
 \input{interpretation}
-
+\input{hypotheses_table}
 \paragraph{Resolving the hypotheses.}
-H1 and H2 are predictive group hypotheses, so the relevant tests are removals in Table~\ref{tab:abl}, not whether every flag or interaction separately has $p<.05$. H3 is resolved by C versus B in Tables~\ref{tab:abl} and \ref{tab:gaps}. A small $p$-value does not make an effect useful: compare its natural-unit size to the \eur3,000 screening tolerance. Conversely, a sparse feature can have a wide interval while the combined group improves validation MAE. Shared trim words, model mix and omitted battery condition offer alternative explanations to causal premiums.
+H1--H3 retain their Section 4 definitions. Removing flags raises KFold/grouped MAE by EUR 213/198; removing interactions raises them by EUR 462/455 (Table~\ref{tab:abl}). C beats B by EUR 723/698 in those validations and EUR 617 on test. These results support H1, H2 and H3 for this benchmark, not prospective or causal claims. A group can help even if an individual coefficient is insignificant.
+
+\input{extra_checks_table}
+E1--E4 preserve the team's additional checks from its revised report. Colour gives no predictive gain; its reported joint Wald association is in-sample only. Country adds a small gain, while removing model and its year terms costs most. Power curvature helps in the reported check but does not change the frozen model. A small $p$-value is not evidence of practical value. These supplementary values are transcribed from the team's report; matching fold-level outputs were not supplied, so their exact paired tests cannot be independently reproduced here.
 
 \subsection{Error analysis}
 \input{cases_table}
 \begin{figure}[h]
 \centering\includegraphics[width=\columnwidth]{figures/residuals.pdf}
-\caption{Set C test residuals, actual minus predicted EUR. Labels mark the three largest absolute errors in Table~\ref{tab:cases}; all 752 test rows are shown.}
+\caption{Set C test residuals, actual minus predicted EUR. Labels mark the five largest absolute errors in Table~\ref{tab:cases}; all 752 test rows are shown; dashed lines mark $\pm2$ residual SD.}
 \label{fig:resid}
 \end{figure}
 \input{case_discussion}
 
 \section{Conclusion and Limitations}
-Title indicators and model-specific registration slopes improve this linear benchmark: test MAE is \eur\TestC{}, versus \eur\TestA{} for raw OLS and \eur\TestRF{} for RF. Ablations support both engineered groups and improvement over raw correlation ranking. The gain is useful but insufficient for the proposed \eur3,000 average-error threshold. Buyers should use the estimate to prioritize inspections and verify trim, battery condition and anomalous specifications before negotiating.
+Trim flags and model-specific year slopes reduce test MAE to EUR 3,711, versus EUR 4,290 for raw OLS and EUR 3,227 for RF. H1--H3 are supported within this benchmark, but neither C nor RF meets the assumed EUR 3,000 tolerance. Use estimates to prioritize inspections, verifying trim, battery condition and specifications.
 
-Coverage is one website, eight countries and one snapshot of asking prices. The supplied order split, prior test exposure, possible duplicate cars, inherited annotations, rare classes and uncertain seller measurements limit generalization. The threshold is an assumed fixed EUR cost and is relatively stricter on cheaper cars. Linear extrapolation can be implausible; fitted associations are not causal depreciation. The next experiment should freeze these rules, collect a new locked snapshot with vehicle-identity and battery-condition checks, and evaluate both price accuracy and actual screening decisions.
+One website, eight countries and one asking-price snapshot limit coverage. The supplied order split, prior test exposure, possible duplicates, inherited annotations and rare classes limit generalization. EUR 3,000 lacks stakeholder cost evidence and is stricter for cheaper cars. Linear extrapolation can be implausible; associations are not causal depreciation. Next, freeze the rules and collect a locked snapshot with vehicle-identity/battery checks, evaluating accuracy and actual screening decisions.
 
 \section*{Contributions of Each Member}
-Responsibilities were shared within each subgroup. \textbf{A}: abstract, problem formulation, literature, data collection/preprocessing, EDA and feature pipeline (Sections 1--5.1; Figures 1--2). \textbf{B}: model choice/tuning, validation, metrics, threshold, baselines and main comparisons with significance testing (Sections 5.2--7.1). \textbf{C}: ablations, coefficients/significance/VIF, error cases and conclusions (Sections 7.2--9; Figure 3).
-\ifdefined\judgeversion
-\begin{itemize}\setlength\itemsep{0pt}
-\item Member 1: Group A responsibilities above.
-\item Member 2: Group B responsibilities above.
-\item Member 3: Group B responsibilities above.
-\item Member 4: Group A responsibilities above.
-\item Member 5: Group C responsibilities above.
-\item Member 6: Group C responsibilities above.
-\item Member 7: Group B responsibilities above.
-\end{itemize}
-\else
-\begin{itemize}\setlength\itemsep{0pt}
-\item \cn{馮昱祥} (515559007): Group A tasks above.
-\item \cn{邱育宏} (315554053): Group B tasks above.
-\item \cn{吳宥駒} (315551146): Group B tasks above.
-\item \cn{林暉庭} (314551160): Group A tasks above.
-\item \cn{黃少鋒} (315561001): Group C tasks above.
-\item \cn{莊誌強} (315561002): Group C tasks above.
-\item \cn{杜洺鋒} (315554001): Group B tasks above.
-\end{itemize}
-\fi
-\paragraph{AI usage.} ChatGPT/Codex assisted with code revision, experimental recomputation, plots, literature checking, writing and compilation. Team packages supplied the data and feature definitions; the team retains responsibility for verifying the integrated results.
+\begingroup\raggedright\textbf{Group A:} \cn{馮昱祥} (515559007), \cn{林暉庭} (314551160) jointly prepared the abstract/introduction and research question, reviewed related work, collected/preprocessed data, ran EDA, and designed the feature pipeline and figure.
+
+\textbf{Group B:} \cn{杜洺鋒} (315554001), \cn{邱育宏} (315554053), \cn{吳宥駒} (315551146) jointly handled model choice/tuning, validation, metrics/threshold/baselines, and main comparisons with significance testing.
+
+\textbf{Group C:} \cn{黃少鋒} (315561001), \cn{莊誌強} (315561002) jointly ran ablations, interpreted coefficients/significance/VIF, analysed the largest errors, and wrote conclusions/limitations.
+
+\par\endgroup
+\paragraph{AI usage.} ChatGPT/Codex assisted with code, recomputation, figures, literature checking, writing and compilation. The team supplied data/feature definitions and remains responsible for verification.
 \bibliography{references}
 \end{document}

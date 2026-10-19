@@ -1,27 +1,20 @@
 # G01 — Tesla asking-price regression (NYCU Data Mining HW1)
 
-This integrated report has exactly six pages TOTAL, including references, using the official ACL style with unchanged margins and body font size. Member contributions follow the user's confirmed A/B/C assignments. The GitHub repository is public and can be viewed without signing in.
+## Current report — 2026-10-19
 
-## Final PDF and original Part B code — 2026-10-19
+`HW1_G01_report.pdf` is compiled from `latex/report.tex` and `latex/paper.tex` using the official ACL style. It has **six pages total, including references**, unchanged body font/margins, all seven members and the public repository URL on page one. The latest report is not a direct PDF overlay edit. The PDF, generated tables, source ZIP and reproducibility ZIP are synchronized.
 
-`HW1_G01_report.pdf` is the current six-page submission candidate, edited directly from the team's supplied `HW1_G01_report_revised.pdf`. It preserves that PDF's Part C tables and adds a Related Work comparison table, explicit A/B/C member contributions, and an honest explanation that EUR 3,000 is an assumed tolerance without stakeholder cost evidence. No existing power plot was supplied, so none was invented. A duplicated page-3 text layer and the incorrect claim that EUR 3,004 meets a EUR 3,000 threshold were corrected. The Group B baseline paragraph is preserved; Part C's car-level bootstrap is distinguished from the dealer-cluster procedure.
+Corrections: Section 4's H1 (trim flags), H2 (model-year interactions), and H3 (engineering versus raw ranking) are resolved in Table 7 using Table 3 and the B−C gap. Colour, country, model and power-squared checks are supplementary E1–E4 in Table 8. Table 6 includes VIF for all 28 terms. Section 6.2 and Table 4 consistently use 10,000 paired **dealer-cluster** bootstrap draws, seed 42. The three named Group B baselines are preserved. Related Work has a comparison table; member contributions are explicit. EUR 3,000 is an assumed tolerance without stakeholder cost evidence. No power EDA plot was supplied, so none was added.
 
-**Original Group B implementation:** see [`partB/`](partB/). Its Python files, README, settings, fonts and workbook are copied byte-for-byte from the supplied `partB (1).zip`, preserving filenames, indentation and line breaks. Follow [`partB/README.md`](partB/README.md) from inside that directory. Run `models.py` before analysis to generate model outputs. Source modules are separate: `data.py`, `models.py`, `analyze.py`, `significance.py`, `utils.py`, `dashboard.py`, and `clear.py`. Do not run `clear.py` unless you intend to delete local Trackio projects.
+## Data and original Group B implementation
 
-**Source/version boundary:** `src/`, `analysis/`, `latex/` and the two ZIPs are the earlier integrated implementation and remain available as historical reproducibility material. They do not reproduce every later Part C HC1/paired-bootstrap revision or this directly edited PDF layout. In particular, the table/figure reproduction map below describes that earlier integration, not the final PDF's updated Part C inference. The team's matching revised LaTeX and Part C code have not been supplied; do not treat the older source archive as the final PDF source. Original Group B code remains independent of these integration scripts.
+AutoScout24 European Tesla advertisements collected **2026-10-05**: 3,754 records, 3,002 training and 752 test. Target: asking price in EUR, not completed sale price. The supplied split is retained. Workbook SHA-256: `92d5319a1f8781e8fbe0ec5d94a67285dead9bdd51da68a0e775deff83b70d3c`.
 
-## Quick start and repository layout
+Original Group B files are in [`partB/`](partB/), copied byte-for-byte from `partB (1).zip`, preserving separate modules, indentation, fonts and settings. Follow its README from inside that directory; run `models.py` before analysis. `clear.py` deletes local Trackio projects and is not needed to reproduce this report. The original files are unchanged by this revision. Other team-uploaded files under `src/` are retained; the integration entry points are specifically `src/recompute.py` and `src/make_tables.py`.
 
-Source: AutoScout24 European Tesla advertisements collected **2026-10-05**. The target is advertised asking price in EUR, not a completed sale price. The supplied workbook has **3,754 records: 3,002 training and 752 test**; the existing split is retained.
+## Reproduce and compile
 
-- `data/Tesla.xlsx`: shared dataset, unchanged; `data/settings.yml`: worksheet and feature settings.
-- `src/recompute.py`: preprocessing, feature construction, training, validation, evaluation and figures.
-- `src/make_tables.py`: converts saved analysis results into LaTeX tables.
-- `analysis/`: saved numerical outputs used by the report.
-- `latex/`: editable ACL source and figures; compile `report.tex`.
-- `HW1_G01_report.pdf`: current six-page formal report. ZIPs are retained for download.
-
-Python 3.12 installation and execution, from the repository root:
+Python 3.12; install `requirements.txt`. Run from the repository root:
 
 ```sh
 python -m venv .venv
@@ -32,70 +25,41 @@ python -m pip install -r requirements.txt
 python src/recompute.py
 python src/make_tables.py
 cd latex
-xelatex report.tex
+xelatex -interaction=nonstopmode -halt-on-error report.tex
 bibtex report
-xelatex report.tex
-xelatex report.tex
+xelatex -interaction=nonstopmode -halt-on-error report.tex
+xelatex -interaction=nonstopmode -halt-on-error report.tex
 ```
 
-The last four commands require XeLaTeX/BibTeX (MiKTeX or TeX Live). Alternatively upload `latex/` to Overleaf and select XeLaTeX.
+The output is `latex/report.pdf`; copy it to the repository root as `HW1_G01_report.pdf` after review. To compile only, use the saved `latex/` files and the last four commands. Overleaf: upload the source ZIP, choose **XeLaTeX** and main file `report.tex`. Times New Roman/MingLiU are used locally; TeX Gyre Termes/FandolSong are fallbacks, so hosted font differences can alter pagination.
 
-### Reproducing report tables and figures
+| Report item | Source and reproduction |
+|---|---|
+| Related Work comparison | `latex/paper.tex`, `latex/references.bib`; compile |
+| Tables 1–3: summary, results, ablation | `analysis/summary.json`, `results.csv`; both Python commands |
+| Table 4: dealer-cluster gaps | `analysis/comparisons.csv`; both Python commands |
+| Table 5: model slices | `analysis/slices.csv`; base MAE recalculated; supplemental percentage summaries retained from team revision |
+| Table 6: HC1 coefficients and VIF | `analysis/coefficients.csv`; both Python commands |
+| Table 7: H1–H3 verdicts | computed from `analysis/results.csv` by `make_tables.py` |
+| Table 8: supplementary E1–E4 | `analysis/team_extra_checks.csv`, transcribed from team PDF; `make_tables.py` formats it |
+| Table 9: largest errors | `analysis/largest_errors.csv`; both Python commands |
+| Figures 1/3: EDA/residuals | `src/recompute.py` |
+| Figure 2: pipeline | `latex/paper.tex`; compile |
 
-| Report item | Saved result / source | Reproduction |
-|---|---|---|
-| Table 2, main comparison | `analysis/results.csv`, `latex/results_table.tex` | Both Python commands above |
-| Table 3, ablation | `analysis/results.csv`, `latex/ablation_table.tex` | Both Python commands above |
-| Table 4, paired gaps | `analysis/comparisons.csv`, `latex/comparisons_table.tex` | Both Python commands above |
-| Figure 1, EDA | `latex/figures/eda.pdf` | `python src/recompute.py` |
-| Figure 2, pipeline | Embedded diagram in `latex/paper.tex` | Compile `report.tex` |
-| Figure 3, residuals | `latex/figures/residuals.pdf` | `python src/recompute.py` |
+## Analysis and evidence boundaries
 
-This repository reorganization changes paths only; no new experiments or numerical changes were made. The 2026-10-18 formal PDF contains only the requested baseline-label wording update. Part C's later revision list is not applied. The earlier anonymous report is removed from the current branch, but remains recoverable in Git history.
+Set C is raw-EUR OLS with seven structured inputs, six title flags and three model-year interactions. KFold and dealer GroupKFold each have five folds; KFold seed 42. Transformations and ranking use fit partitions only. Test MAE remains EUR 4,289.57 (A), 3,711.48 (C), and 3,227.41 (RF). C and RF miss the assumed EUR 3,000 tolerance. Prior test exposure is disclosed; this is not a new blind evaluation.
 
-## Deliverables
+HC1 robust t inference matches the team's revised methodology. Continuous/interaction terms are per SD, flag estimates/intervals in the displayed table are converted to 0-to-1 units. CSV retains the standardized fitting coefficients. VIF uses the full-rank design with an intercept. The saturated singleton Cybertruck remains in prediction, but its uncertainty is suppressed. Inference is exploratory and does not adjust for dealer dependence or multiple testing. Table 4 samples the 589 observed test dealer groups, keeping paired losses together and weighting by sampled row counts. It is conditional on fitted models, without retraining or selection uncertainty.
 
-- `HW1_G01_report.pdf`: preprint format, names/student IDs, repository URL on page one.
-- `Tesla_G01_ACL_Source.zip`: editable LaTeX project, including both main documents, official styles, bibliography, generated tables and figures.
-- `Tesla_G01_Reproducibility.zip`: calculation scripts, the unchanged shared workbook/settings, full results and LaTeX source.
+E1–E4, overlap descriptions and some narrative case/slice summaries are preserved from the supplied revised team PDF. Their original supplementary fold-level outputs were not supplied. `make_tables.py` reproduces their presentation from recorded values; **it does not rerun or independently verify their original paired tests**. See `analysis/PROVENANCE.md`. No invented p-values or new experiment outcomes are substituted.
 
-This update does not submit a report to E3 or the Judge. The required eight-minute presentation is a separate deliverable and is not included in this report package. The report is not a guarantee of any reviewer score.
+## Packages and responsibilities
 
-## Compile
+- `Tesla_G01_ACL_Source.zip`: current LaTeX, tables, figures, bibliography and official styles.
+- `Tesla_G01_Reproducibility.zip`: current integration scripts/data/results/LaTeX, original `partB/`, requirements and README.
+- A: 馮昱祥 515559007、林暉庭 314551160 — introduction, literature, data, EDA, feature pipeline.
+- B: 杜洺鋒 315554001、邱育宏 315554053、吳宥駒 315551146 — model/tuning, validation, metrics/baselines and main comparisons.
+- C: 黃少鋒 315561001、莊誌強 315561002 — ablation, coefficients/significance/VIF, errors and conclusion.
 
-Use **XeLaTeX**, then BibTeX, then XeLaTeX twice. In Overleaf select XeLaTeX and main document `report.tex` or `judge.tex`. The local build uses Times New Roman and MingLiU; TeX Gyre Termes and FandolSong-Regular are fallbacks for hosted TeX installations. Do not compile this source using pdfLaTeX.
-
-```
-xelatex report.tex
-bibtex report
-xelatex report.tex
-xelatex report.tex
-```
-
-Edit `team.tex` for team/repository information and `paper.tex` for any future changes to contributions. Confirmed assignments: A — 馮昱祥 515559007, 林暉庭 314551160; B — 邱育宏 315554053, 吳宥駒 315551146, 杜洺鋒 315554001; C — 黃少鋒 315561001, 莊誌強 315561002. Responsibilities are shared within each subgroup, as specified by the user. The anonymous version replaces member identities with member numbers.
-
-## Reproduce
-
-Python 3.12 was used. Install `requirements.txt`, then run `python recompute.py` and `python make_tables.py` from the unpacked reproducibility folder (legacy ZIP layout); in this repository use the `src/` commands above. The optional local `deps` folder is not bundled; scripts otherwise use the installed Python environment. Model training reads `partB/Tesla.xlsx` and `partB/settings.yml` and writes only `analysis/` and generated tables/figures in `latex/`.
-
-Workbook SHA-256: `92d5319a1f8781e8fbe0ec5d94a67285dead9bdd51da68a0e775deff83b70d3c`.
-
-The benchmark preserves 3,002 training and 752 test rows. The final predictor is Set C OLS: seven structured fields, six title indicators and three model-by-registration-year interactions. Target is **raw asking price in EUR**, with no log transform. Both KFold and dealer GroupKFold have five folds; KFold seed is 42. Missing dealers are separate `_rowN` groups, matching the original code. Centering and scaling use fit partitions only. Top-k uses the actual standard error, not the fold standard deviation.
-
-Test MAE: raw OLS 4,289.57 EUR; engineered OLS 3,711.48 EUR; random forest 3,227.41 EUR. Both engineered OLS and RF miss the proposed 3,000 EUR threshold. Bootstrap intervals are paired by test dealer cluster. HC3 coefficient inference excludes the saturated singleton Cybertruck row/dummy for the other coefficients; its own uncertainty is explicitly unavailable. The full model retains that row for prediction. Prior test exposure is disclosed; this is not a new blind evaluation.
-
-`analysis/` includes final-model predictions, all coefficients, model slices, largest errors, bootstrap comparisons, k search, Ridge sensitivity, summary statistics and data-quality sensitivity. Existing team packages were inspected but no supplied source files were overwritten. References were checked against publisher/preprint materials.
-
-## Remaining team actions
-
-1. Review the integrated scientific claims before submission.
-2. Confirm that the final report and repository agree before submission.
-3. Prepare the matching presentation and the required E3 ZIP using the assignment naming rules.
-
-## AI assistance
-
-ChatGPT/Codex assisted with inspecting team material, correcting analysis code, rerunning experiments, creating plots, checking references, writing and compilation. Member attribution was confirmed by the user. The team retains responsibility for verifying the integrated scientific results.
-
-## 2026-10-18 text revision
-
-The formal report names and bolds Trivial Baseline, Simple Baseline and Strong Baseline as requested by Group B. Numerical results and analyses are unchanged. Float spacing was adjusted to retain six total pages. The Part C revision list has not been applied. The earlier judge PDF is available only in Git history. The source archives contain the revised shared paper text.
+Earlier versions are recoverable in Git history. This update does not submit to E3 or the Judge. Review the scientific claims and prepare the separate presentation/submission package. ChatGPT/Codex assisted with source restoration, analysis verification, figures, writing and compilation; the team retains responsibility for verification.
