@@ -75,3 +75,5 @@ Table 7 contains recomputed delta (p) for KFold and GroupKFold: flags 213 (.0003
 Table 5 includes Gain = 100(C/A−1)% and All across 752 test cars. All MAE, gain, median absolute percentage error and within-EUR3000 shares are calculated from the predictions, not copied from a report. Table 4 now displays [417,742], [453,783], [-723,-236], reproduced with car-level paired draws. Its p column still uses the grouped-fold paired t-test; it is not a bootstrap p-value.
 
 Section 7.1 includes the 600 non-overlapping-row sensitivity: RF's advantage over C is EUR215, its excess over the threshold is EUR816, and C's advantage over A is EUR519. Contributions have one entry for each of the seven members, with concrete shared tasks and section/figure references; no unsupported individual division of work is invented. The report remains six pages including references.
+
+馮昱祥 (515559007) additionally organized the report and formatted it using the ACL template; this responsibility is included in the individual Contributions entry.
