@@ -122,7 +122,7 @@ A model/registration-month/mileage duplicate proxy flags \OverlapN{} test rows o
 \section{Analysis}
 \subsection{Coefficients and significance}
 \input{coefficients_table}
-Table~\ref{tab:coef} lists all 28 non-intercept terms. Continuous inputs and interaction products are standardized (EUR per training SD); flags are shown as 0-to-1 effects, and category contrasts use Model 3, Netherlands and AP. Training $R^2=0.850$. HC3 is undefined at the single leverage-1 Cybertruck, so the revised analysis uses HC1 robust $t$ inference and suppresses that singleton's uncertainty. HC1 ignores dealer dependence; no multiple-testing correction is applied. VIF uses the full-rank design with an intercept (maximum 5.9). Results are exploratory associations.
+Table~\ref{tab:coef} lists all 28 non-intercept terms. HC3 is undefined (one leverage-1 row, the single Cybertruck), so we use HC1 robust $t$ inference. Training $R^2$ is 0.850; max VIF 5.9 (year), moderate. HC1 ignores dealer dependence and no multiple-testing correction is applied, so results are exploratory associations. Continuous and interaction terms are per training SD; flags are 0-to-1 effects. Category references are Model 3, Netherlands and AP; the singleton's uncertainty is suppressed.
 
 \input{interpretation}
 \input{hypotheses_table}
@@ -130,7 +130,8 @@ Table~\ref{tab:coef} lists all 28 non-intercept terms. Continuous inputs and int
 H1--H3 retain their Section 4 definitions. Removing flags raises KFold/grouped MAE by EUR 213/198; removing interactions raises them by EUR 462/455 (Table~\ref{tab:abl}). C beats B by EUR 723/698 in those validations and EUR 617 on test. These results support H1, H2 and H3 for this benchmark, not prospective or causal claims. A group can help even if an individual coefficient is insignificant.
 
 \input{extra_checks_table}
-E1--E4 preserve the team's additional checks from its revised report. Colour gives no predictive gain; its reported joint Wald association is in-sample only. Country adds a small gain, while removing model and its year terms costs most. Power curvature helps in the reported check but does not change the frozen model. A small $p$-value is not evidence of practical value. These supplementary values are transcribed from the team's report; matching fold-level outputs were not supplied, so their exact paired tests cannot be independently reproduced here.
+\paragraph{Additional checks.}
+E1--E4 add or remove one group and compare KFold MAE with C (paired fold $t$-test). Colour gives no prediction gain, although a joint Wald test finds a small in-sample link. Country matters, but little (+EUR 78, $p=0.010$). Removing car model, with its year terms, costs EUR 2,149, by far the largest change. Price is curved in power ($-$EUR 107, $p<.001$); we report this without changing the frozen model. A small $p$-value does not make an effect useful: compare its natural-unit size to the EUR 3,000 screening tolerance.
 
 \subsection{Error analysis}
 \input{cases_table}

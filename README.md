@@ -63,3 +63,7 @@ E1–E4, overlap descriptions and some narrative case/slice summaries are preser
 - C: 黃少鋒 315561001、莊誌強 315561002 — ablation, coefficients/significance/VIF, errors and conclusion.
 
 Earlier versions are recoverable in Git history. This update does not submit to E3 or the Judge. Review the scientific claims and prepare the separate presentation/submission package. ChatGPT/Codex assisted with source restoration, analysis verification, figures, writing and compilation; the team retains responsibility for verification.
+
+## Wording and LaTeX correction
+
+Section 8.1 uses the authors' voice and the supplied revised interpretation. H1–H3/E1–E4 identifiers, per-feature VIF and dealer-cluster bootstrap remain consistent. The source generator uses raw triple-quoted strings to preserve LaTeX commands and paired quotation marks in Cases 2, 3 and 5. This is a wording/typesetting update; no new experiment outcomes or reproducibility claims are added. The evidence boundaries above still apply.
