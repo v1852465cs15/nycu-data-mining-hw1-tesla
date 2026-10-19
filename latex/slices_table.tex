@@ -1,17 +1,18 @@
 \begin{table}[h!]
-\centering\footnotesize\setlength{\tabcolsep}{2pt}
-\begin{tabular}{lrrrrrr}
+\centering\fontsize{8}{9.5}\selectfont\setlength{\tabcolsep}{1.6pt}
+\begin{tabular}{lrrrrrrr}
 \toprule
-Model & $n$ & A & B & C & Med.\% & $\leq$3k\%\\
+Model & $n$ & A & B & C & Gain & Med. & $\leq$3k\\
 \midrule
-3 & 347 & 3,467 & 3,481 & 3,004 & 7.9 & 63\\
-S & 69 & 6,790 & 6,917 & 6,289 & 16.7 & 29\\
-Y & 271 & 3,723 & 3,770 & 3,161 & 6.7 & 58\\
-X & 59 & 7,816 & 7,876 & 6,423 & 9.5 & 42\\
-Roadster & 5 & 12,403 & 12,395 & 11,976 & 13.0 & 0\\
-Cybertruck & 1 & 22,051 & 21,858 & 19,203 & 12.0 & 0\\
+3 & 347 & 3,467 & 3,481 & 3,004 & -13\% & 7.9\% & 63\%\\
+S & 69 & 6,790 & 6,917 & 6,289 & -7\% & 16.7\% & 29\%\\
+Y & 271 & 3,723 & 3,770 & 3,161 & -15\% & 6.7\% & 58\%\\
+X & 59 & 7,816 & 7,876 & 6,423 & -18\% & 9.5\% & 42\%\\
+Roadster & 5 & 12,403 & 12,395 & 11,976 & -3\% & 13.0\% & 0\%\\
+Cybertruck & 1 & 22,051 & 21,858 & 19,203 & -13\% & 12.0\% & 0\%\\
+All & 752 & 4,290 & 4,329 & 3,711 & -13\% & 8.0\% & 56\%\\
 \bottomrule
 \end{tabular}
-\caption{Test MAE by model (EUR). Last columns: C median absolute percentage error and share within EUR 3,000. Rare classes are not interpreted.}
+\caption{Test MAE (EUR). Gain $=100(C/A-1)\%$; negative means lower error. Med.: C median absolute percentage error; $\leq$3k: share within EUR 3,000. All aggregates all 752 cars; rare classes are not interpreted.}
 \label{tab:slices}
 \end{table}

@@ -99,25 +99,29 @@ MAE measures typical absolute EUR error; RMSE penalizes large misses, and $R^2$ 
 
 Baselines are the \textbf{Trivial Baseline (training mean)}, \textbf{Simple Baseline (mileage-only OLS)}, and \textbf{Strong Baseline (200-tree random forest on Set A, seed 42; no depth limit, default leaf size 1)}. The forest is an inherited fixed flexible comparator, not a tuned optimum. All methods use identical rows and metrics. Paired test-loss gaps use 10,000 dealer-cluster bootstrap resamples (seed 42), keeping both methods' predictions together. Grouped-fold paired $t$-tests have only five overlapping training fits, so their $p$-values are exploratory.
 
+Table~\ref{tab:gaps} reports car-level paired-bootstrap intervals; dealer-cluster intervals are retained as a sensitivity analysis in the repository.
+
 \section{Results}
 \subsection{Main comparison}
 \input{results_table}
-Table~\ref{tab:results} shows that engineered OLS improves over raw OLS but remains behind the random forest. Test MAE falls by \eur\GainAC{} (\GainPct{}\%) from A to C; the forest's advantage over C is \eur\GapRF{}. A piecewise tree ensemble can capture local trim/usage combinations beyond the three slopes and six flags, although the comparison does not isolate that mechanism. The forest remains a baseline; our final predictor is linear.
+Engineered OLS improves over raw OLS but remains behind RF (Table~\ref{tab:results}): A-to-C test MAE falls EUR 578 (13.5\%); RF leads C by EUR 484. A forest can capture local combinations beyond our slopes and flags, although this comparison does not isolate the mechanism. Our final predictor remains linear.
 
-Against the proposed threshold, C exceeds \eur3,000 by \eur\ExcessC{}, and RF exceeds it by \eur\ExcessRF{}. Only \WithinC{}\% of C's test errors lie within \eur3,000 (RF: \WithinRF{}\%). The average threshold is not satisfied even though many individual estimates fall inside it. Thus these predictions are inspection aids, not autonomous pricing decisions.
+C and RF exceed the EUR 3,000 threshold by EUR 711 and EUR 227. Only 55.6\%/59.4\% of their test errors fall within it. These are inspection aids, not autonomous pricing decisions.
+
+On the 600 non-overlapping test cars, the forest's lead over C shrinks to EUR 215 (3,816 vs 4,031), and it exceeds the threshold by EUR 816; C's gain over A remains EUR 519.
 
 \subsection{Ablations and uncertainty}
 \input{ablation_table}
 Only the feature representation changes in Table~\ref{tab:abl}; every row uses OLS and the same splits. Removing either engineered group worsens dealer-grouped CV, supporting H1 and H2. Set C also improves on top-$k$ Set B, supporting H3: ranking raw associations cannot create title information or model-specific slopes. Both groups use already collected fields, adding nine numeric terms rather than a new data source. Their costs are parsing maintenance and harder interpretation of overlapping trim mentions.
 
 \input{comparisons_table}
-The paired bootstrap intervals in Table~\ref{tab:gaps} preserve within-dealer dependence in test losses. They describe uncertainty for these fixed fitted models and observed sellers; they omit retraining, feature selection and market change. Reused test data and uncertain vehicle identity prevent treating these intervals as definitive prospective evidence.
+Table~\ref{tab:gaps} uses car-level resampling and does not preserve within-dealer dependence. Both car-level and dealer-cluster intervals keep predictions paired and describe fixed-model uncertainty; neither includes retraining, selection or market change. Reused test data limits prospective claims.
 
 \input{slices_table}
 C improves every common-model average (Table~\ref{tab:slices}), least for S. Relative to price, X (9.5\%) is close to 3/Y; S is weakest (16.7\%), with many old, cheap cars. Rare classes are not interpreted. No model meets the EUR 3,000 threshold; Model 3's EUR 3,004 exceeds it by EUR 4. Excluding six rare cars gives test MAE EUR 4,211 (A), 3,635 (C), and 3,090 (RF).
 
 \paragraph{Sensitivity to data quality.}
-A model/registration-month/mileage duplicate proxy flags \OverlapN{} test rows overlapping training. On the \NonoverlapN{} remaining rows, MAE is \eur\NonoverlapA{} (A), \eur\NonoverlapC{} (C), and \eur\NonoverlapRF{} (RF). Matching attributes do not prove identical vehicles; exclusion is a sensitivity analysis, not a replacement split. Removing the single Model Y/2001 training record and refitting C gives test MAE \eur\SuspectMAE{}. This post-hoc audit is not used to optimize the headline model.
+The model/registration-month/mileage proxy flags 152 overlapping test rows; Section 7.1 reports the remaining 600. Matching attributes do not prove vehicle identity. Removing the Model Y/2001 training row gives C test MAE EUR 3,713. Neither post-hoc sensitivity changes the headline model.
 
 \section{Analysis}
 \subsection{Coefficients and significance}
@@ -148,13 +152,16 @@ Trim flags and model-specific year slopes reduce test MAE to EUR 3,711, versus E
 One website, eight countries and one asking-price snapshot limit coverage. The supplied order split, prior test exposure, possible duplicates, inherited annotations and rare classes limit generalization. EUR 3,000 lacks stakeholder cost evidence and is stricter for cheaper cars. Linear extrapolation can be implausible; associations are not causal depreciation. Next, freeze the rules and collect a locked snapshot with vehicle-identity/battery checks, evaluating accuracy and actual screening decisions.
 
 \section*{Contributions of Each Member}
-\begingroup\raggedright\textbf{Group A:} \cn{馮昱祥} (515559007), \cn{林暉庭} (314551160) jointly prepared the abstract/introduction and research question, reviewed related work, collected/preprocessed data, ran EDA, and designed the feature pipeline and figure.
-
-\textbf{Group B:} \cn{杜洺鋒} (315554001), \cn{邱育宏} (315554053), \cn{吳宥駒} (315551146) jointly handled model choice/tuning, validation, metrics/threshold/baselines, and main comparisons with significance testing.
-
-\textbf{Group C:} \cn{黃少鋒} (315561001), \cn{莊誌強} (315561002) jointly ran ablations, interpreted coefficients/significance/VIF, analysed the largest errors, and wrote conclusions/limitations.
-
-\par\endgroup
+Shared responsibilities within each group:\par
+\begingroup\raggedright
+\noindent\cn{馮昱祥} (515559007): introduction/literature, data/EDA and feature pipeline; Sections 1--5.1, Figures 1--2.\par
+\noindent\cn{林暉庭} (314551160): introduction/literature, data/EDA and feature pipeline; Sections 1--5.1, Figures 1--2.\par
+\noindent\cn{杜洺鋒} (315554001): model/tuning, validation, metrics/baselines and comparisons; Sections 5.2--7.1.\par
+\noindent\cn{邱育宏} (315554053): model/tuning, validation, metrics/baselines and comparisons; Sections 5.2--7.1.\par
+\noindent\cn{吳宥駒} (315551146): model/tuning, validation, metrics/baselines and comparisons; Sections 5.2--7.1.\par
+\noindent\cn{黃少鋒} (315561001): ablations, coefficients/significance/VIF, errors and conclusion; Sections 7.2--9, Figure 3.\par
+\noindent\cn{莊誌強} (315561002): ablations, coefficients/significance/VIF, errors and conclusion; Sections 7.2--9, Figure 3.\par
+\endgroup
 \paragraph{AI usage.} ChatGPT/Codex assisted with code, recomputation, figures, literature checking, writing and compilation. The team supplied data/feature definitions and remains responsible for verification.
 \bibliography{references}
 \end{document}

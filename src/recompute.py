@@ -84,6 +84,21 @@ for kind in ['mean','simple','RF','A','B','C','no_flags','no_inter']:
  res.append(row); print(row,flush=True)
 pd.DataFrame(res).to_csv(OUT/'results.csv',index=False)
 pd.DataFrame({'actual':yt,**preds}).to_csv(OUT/'predictions.csv',index=False)
+# Preserve paired fold losses so Table 7's tests are independently inspectable.
+pd.DataFrame([dict(protocol=protocol,model=kind,fold=i+1,mae=float(v))
+ for protocol,values in [('KFold',cvs),('GroupKFold',gcvs)]
+ for kind,loss in values.items() for i,v in enumerate(loss[:,0])]).to_csv(OUT/'fold_losses.csv',index=False)
+pd.DataFrame([dict(model=kind,protocol=protocol,delta=float((values[kind][:,0]-values['C'][:,0]).mean()),
+ p=float(stats.ttest_rel(values[kind][:,0],values['C'][:,0]).pvalue))
+ for kind in ['no_flags','no_inter','B'] for protocol,values in [('KFold',cvs),('GroupKFold',gcvs)]]).to_csv(OUT/'hypothesis_tests.csv',index=False)
+# Derive all slice columns from the same held-out rows and predictions.
+slice_metrics=[]
+for label in list(te[MODEL].unique())+['All']:
+ mask=np.ones(len(te),bool) if label=='All' else (te[MODEL]==label).to_numpy()
+ errs={k:abs(yt[mask]-preds[k][mask]) for k in ['A','B','C']}
+ slice_metrics.append(dict(model=label,n=int(mask.sum()),**{k:float(v.mean()) for k,v in errs.items()},
+ gain=100*(errs['C'].mean()/errs['A'].mean()-1),median_pct=100*np.median(errs['C']/abs(yt[mask])),within_pct=100*np.mean(errs['C']<=3000)))
+pd.DataFrame(slice_metrics).to_csv(OUT/'slice_metrics.csv',index=False)
 # A training-only regularization sensitivity; fixed C remains the final descriptive model.
 tuning=[]
 for alpha in [.01,.1,1,10,100,1000]:
@@ -98,6 +113,14 @@ for baseline in ['A','B','RF','no_flags','no_inter']:
   draw=rng.integers(0,ngrp,ngrp); boot.append(sums[draw].sum()/counts[draw].sum())
  tests.append(dict(comparison=baseline+' minus C',gap=gap.mean(),ci_low=np.quantile(boot,.025),ci_high=np.quantile(boot,.975),paired_group_p=stats.ttest_rel(gcvs[baseline][:,0],gcvs['C'][:,0]).pvalue))
 pd.DataFrame(tests).to_csv(OUT/'comparisons.csv',index=False)
+# The requested Table 4 uses identical car-level draws across all comparisons.
+car_draws=np.random.default_rng(42).integers(0,len(yt),(10000,len(yt)))
+car_tests=[]
+for baseline in ['A','B','RF']:
+ gap=abs(yt-preds[baseline])-abs(yt-preds['C'])
+ ci=np.quantile(gap[car_draws].mean(axis=1),[.025,.975])
+ car_tests.append(dict(comparison=baseline+' minus C',gap=gap.mean(),ci_low=ci[0],ci_high=ci[1],paired_group_p=stats.ttest_rel(gcvs[baseline][:,0],gcvs['C'][:,0]).pvalue))
+pd.DataFrame(car_tests).to_csv(OUT/'car_comparisons.csv',index=False)
 # Full-rank final-model coefficient parametrization; use actual training mean, common references.
 x=features(tr,tr[YEAR].mean()); nums=NUM+FLAGS+INTER
 scale=x[nums].std(ddof=0); z=(x[nums]-x[nums].mean())/scale

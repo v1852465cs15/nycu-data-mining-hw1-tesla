@@ -39,11 +39,11 @@ for k,name in [('A','A: raw'),('B','B: top-5'),('C','C: full'),('no_flags','C $-
  d=R[k];rows.append(name+' & '+f(d['cv_mae'])+' $\\pm$ '+f(d['cv_sd'])+' & '+f(d['group_mae'])+' $\\pm$ '+f(d['group_sd'])+' & '+f(d['test_mae']))
 write('ablation_table',table(rows,'Set & KFold MAE & Group MAE & Test MAE','lrrr','Matched OLS ablations, EUR. All folds and preprocessing rules are shared. Lower is better; C is best in every column.','tab:abl').replace('C: full &','\\textbf{C: full} &'))
 rows=[]
-for d in read('comparisons.csv'):
+for d in read('car_comparisons.csv'):
  if d['comparison'].startswith(('no_flags','no_inter')):continue
  p=d['paired_group_p'];ps='$<.001$' if p<.001 else f'{p:.3f}'
  rows.append(d['comparison'].replace('minus C','$-$ C')+' & '+f(d['gap'])+' & ['+f(d['ci_low'])+', '+f(d['ci_high'])+'] & '+ps)
-write('comparisons_table',table(rows,'Comparison & Gap & 95\\% cluster CI & $p$','lrrr','Test-MAE gaps (EUR): positive favors C. CI: paired dealer-cluster bootstrap, 10,000 draws; $p$: exploratory paired grouped-fold $t$-test.','tab:gaps'))
+write('comparisons_table',table(rows,'Comparison & Gap & 95\\% CI & $p$','lrrr','Test-MAE gaps (EUR): positive favors C. CI: paired bootstrap over 752 test cars, 10,000 draws; $p$: exploratory paired grouped-fold $t$-test.','tab:gaps'))
 rows=[]
 for d in read('slices.csv'):
  rows.append(str(d['model']).replace('Model ','')+' & '+f(d['n'])+' & '+f(d['A'])+' & '+f(d['B'])+' & '+f(d['C']))
@@ -67,22 +67,25 @@ write('coefficients_table',table(rows,r'Term & $\beta$ & 95\% CI & $p$ & VIF','l
 write('interpretation',r"""\paragraph{Interpretation.} Each newer year adds EUR 1,882 for Model 3, about EUR 4,178 for S and EUR 4,994 for X; Y does not differ from Model 3. This supports heterogeneous slopes, not a causal effect of aging. Trim matters beyond power and model: HW4, new generation, Performance and Long Range carry premiums and the entry trim a discount (Table~\ref{tab:coef}). Italy (+EUR 2,775), Spain ($-$EUR 1,430) and Belgium ($-$EUR 842) differ from the Netherlands; other countries do not. FSD adds EUR 866; EAP is not significant.
 
 AWD ($-$EUR 1,461) corrects for overlap: 88\% of AWD-flagged listings also carry Long Range or Performance and report more power (318 vs 282 kW), so those terms take most of the premium; a Performance AWD car still nets +EUR 1,480. Raw AWD listings are also cheaper (EUR 34,596 vs EUR 36,016), so the sign is not a reversal.""")
+tests={(d['model'],d['protocol']):d for d in read('hypothesis_tests.csv')}
+def pv(p):
+ return f'{p:.4f}'.lstrip('0') if p<.001 else f'{p:.3f}'.lstrip('0')
 rows=[]
 for ident,comparison,kind in [('H1','Remove flags','no_flags'),('H2','Remove interactions','no_inter'),('H3','B minus C','B')]:
- d=R[kind]; c=R['C']; rows.append(ident+' & '+comparison+' & '+f(d['cv_mae']-c['cv_mae'])+' / '+f(d['group_mae']-c['group_mae'])+' & Supported')
-write('hypotheses_table',table(rows,r'ID & Test & $\Delta$ K/G & Verdict','llrl',r'Section 4 hypotheses resolved using Table~\ref{tab:abl}. $\Delta$ K/G: KFold/grouped MAE minus C, EUR. Positive favors C. B$-$C test gap is EUR 617 (Table~\ref{tab:gaps}).','tab:hyp'))
+ cells=[]
+ for protocol in ['KFold','GroupKFold']:
+  d=tests[kind,protocol];cells.append(f(d['delta'])+' ('+pv(d['p'])+')')
+ rows.append(ident+' & '+comparison+' & '+' & '.join(cells))
+write('hypotheses_table',table(rows,r'ID & Test & KFold $\Delta$ ($p$) & Group $\Delta$ ($p$)','llrr',r'H1--H3 are supported in this benchmark. $\Delta$: MAE minus C (EUR), positive favors C. Two-sided paired $t$-tests on five matched fold MAEs; overlapping training fits make $p$ exploratory. Fold losses are archived.','tab:hyp').replace('\\small','\\footnotesize').replace('{3pt}','{2pt}'))
 rows=[]
 for d in read('team_extra_checks.csv'):
  pv='$<.001$' if d['p']=='<.001' else f"{d['p']:.3f}"
  rows.append(d['id']+' & '+d['check']+' & '+f(d['delta'])+' & '+pv)
 write('extra_checks_table',table(rows,r'ID & Additional check & $\Delta$ MAE & $p$','llrr',r'Additional exploratory checks E1--E4: KFold MAE change from C (EUR 3,244), positive = worse; paired fold $t$-tests. E3 removes model and its year terms. These do not redefine H1--H3.','tab:extra'))
-# Preserve the additional slice diagnostics in the team's supplied revision.
-slice_extra={'Model 3':('7.9','63'),'Model Y':('6.7','58'),'Model S':('16.7','29'),'Model X':('9.5','42'),'Roadster':('13.0','0'),'Cybertruck':('12.0','0')}
 rows=[]
-for d in read('slices.csv'):
- med,share=slice_extra[d['model']]
- rows.append(d['model'].replace('Model ','')+' & '+f(d['n'])+' & '+f(d['A'])+' & '+f(d['B'])+' & '+f(d['C'])+' & '+med+' & '+share)
-write('slices_table',table(rows,r'Model & $n$ & A & B & C & Med.\% & $\leq$3k\%','lrrrrrr',r'Test MAE by model (EUR). Last columns: C median absolute percentage error and share within EUR 3,000. Rare classes are not interpreted.','tab:slices').replace('\\small','\\footnotesize').replace('{3pt}','{2pt}'))
+for d in read('slice_metrics.csv'):
+ rows.append(d['model'].replace('Model ','')+' & '+f(d['n'])+' & '+f(d['A'])+' & '+f(d['B'])+' & '+f(d['C'])+' & '+f(d['gain'])+r'\% & '+f"{d['median_pct']:.1f}"+r'\% & '+f(d['within_pct'])+r'\%')
+write('slices_table',table(rows,r'Model & $n$ & A & B & C & Gain & Med. & $\leq$3k','lrrrrrrr',r'Test MAE (EUR). Gain $=100(C/A-1)\%$; negative means lower error. Med.: C median absolute percentage error; $\leq$3k: share within EUR 3,000. All aggregates all 752 cars; rare classes are not interpreted.','tab:slices').replace('\\small',r'\fontsize{8}{9.5}\selectfont').replace('{3pt}','{1.6pt}'))
 rows=[]
 for i,d in enumerate(read('largest_errors.csv')[:5]):rows.append(str(i+1)+' & '+f(d['售價'])+' & '+f(d['pred'])+' & '+f(d['error']))
 write('cases_table',table(rows,'Case & Actual & Predicted & Error','lrrr','Five largest absolute errors of Set C (EUR). Error = actual $-$ predicted. Listing context below.','tab:cases'))
